@@ -27,4 +27,4 @@ slack run
 
 ### Make an error
 
-change the `sheet_name` to a random value
+change the `sheet_title` to a random value
