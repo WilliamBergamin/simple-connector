@@ -1,0 +1,96 @@
+{
+  "_metadata": {
+    "major_version": 2
+  },
+  "display_information": {
+    "name": "Simple Survey",
+    "description": "Gather comments in a spreadsheet"
+  },
+  "features": {
+    "app_home": {
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": true
+    },
+    "bot_user": {
+      "display_name": "Simple Survey"
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "channels:join",
+        "commands",
+        "triggers:read"
+      ]
+    },
+    "token_management_enabled": false
+  },
+  "settings": {
+    "org_deploy_enabled": true,
+    "incoming_webhooks": {},
+    "function_runtime": "slack",
+    "siws_links": {}
+  },
+  "types": {},
+  "workflows": {
+    "answer_survey": {
+      "title": "Respond to a survey",
+      "description": "Add comments and feedback to a survey",
+      "input_parameters": {
+        "properties": {
+          "interactivity": {
+            "type": "slack#/types/interactivity"
+          }
+        },
+        "required": [
+          "interactivity"
+        ]
+      },
+      "steps": [
+        {
+          "id": "0",
+          "function_id": "slack#/functions/open_form",
+          "inputs": {
+            "title": "Survey your thoughts",
+            "description": "What do you think about the topic of this message?",
+            "interactivity": "{{inputs.interactivity}}",
+            "submit_label": "Share",
+            "fields": {
+              "elements": [
+                {
+                  "name": "comments",
+                  "title": "Comments",
+                  "type": "string",
+                  "description": "Any additional ideas to share?",
+                  "long": true
+                }
+              ],
+              "required": [
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "id": "1",
+          "function_id": "A04MG80N5CY#/functions/add_spreadsheet_row",
+          "inputs": {
+            "google_access_token": {
+              "credential_source": "END_USER"
+            },
+            "spreadsheet_id": "google_spreadsheet_id",
+            "columns": [
+              "=NOW()",
+              "{{steps.0.fields.comments}}"
+            ],
+            "sheet_title": "Responses"
+          }
+        }
+      ]
+    }
+  },
+  "outgoing_domains": [
+    "sheets.googleapis.com",
+    "raw.githubusercontent.com"
+  ]
+}
